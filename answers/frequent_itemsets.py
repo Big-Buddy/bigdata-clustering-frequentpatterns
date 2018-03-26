@@ -1,10 +1,13 @@
 import sys
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
-from pyspark.sql.functions import monotonically_increasing_id as mii
+from pyspark.sql.functions import monotonically_increasing_id as mii, size
+from pyspark.ml.fpm import FPGrowth
 
 file_name = sys.argv[1]
 desired_rows = int(sys.argv[2])
+desired_supp = float(sys.argv[3])
+desired_conf = float(sys.argv[4])
 
 spark = SparkSession.builder.master("local").appName("lab1").getOrCreate()
 
@@ -17,4 +20,10 @@ plants = plants.withColumn("id", mii())
 
 reordered_plants = plants.select("id", "plant", "items")
 
-reordered_plants.show(desired_rows)
+fpGrowth = FPGrowth(itemsCol="items", minSupport=desired_supp, minConfidence=desired_conf)
+model = fpGrowth.fit(reordered_plants)
+
+output = model.freqItemsets
+output = output.withColumn('itemsize', size(output.items))
+
+output.sort("itemsize", "freq", ascending=False).select("items", "freq").show(desired_rows)
