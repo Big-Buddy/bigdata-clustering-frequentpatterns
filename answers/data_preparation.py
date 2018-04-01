@@ -4,7 +4,7 @@ from pyspark import SparkContext, SparkConf
 def dictionary_build(data):
 	dict_buff = []
 	for s in states:
-		if s[1] in data.items:
+		if s[1] in data[1]:
 			dict_buff.append({'name' : s, data.plant : 1})
 		else:
 			dict_buff.append({'name' : s, data.plant : 0})
