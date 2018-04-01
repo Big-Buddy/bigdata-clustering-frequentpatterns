@@ -4,7 +4,7 @@ from pyspark import SparkContext, SparkConf
 def dictionary_build(data):
 	dict_buff = []
 	for s in states:
-		if s in data.items:
+		if s[1] in data.items:
 			dict_buff.append({'name' : s, data.plant : 1})
 		else:
 			dict_buff.append({'name' : s, data.plant : 0})
@@ -21,7 +21,7 @@ sc = SparkContext(conf=conf)
 lines = sc.textFile(file_name)
 parts = lines.map(lambda row: row.split(","))
 plantRDD = parts.map(lambda p: (p[0], p[1:]))
-stateRDD = plantRDD.flatMap(lambda x: [s for s in x[1]])
+stateRDD = plantRDD.flatMap(lambda x: [('state', s) for s in x[1]])
 global states
 states = stateRDD.distinct().collect()
 dictionaryRDD = plantRDD.flatMap(lambda x: dictionary_build)
