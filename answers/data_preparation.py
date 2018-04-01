@@ -21,7 +21,7 @@ sc = SparkContext(conf=conf)
 lines = sc.textFile(file_name)
 parts = lines.map(lambda row: row.value.split(","))
 plantRDD = parts.map(lambda p: (p[0], p[1:]))
-stateRDD = plantRDD.flatMap(lambda x: s for s in x[1])
+stateRDD = plantRDD.flatMap(lambda x: [s for s in x[1]])
 global states
 states = stateRDD.distinct().collect()
 dictionaryRDD = plantRDD.flatMap(lambda x: dictionary_build)
