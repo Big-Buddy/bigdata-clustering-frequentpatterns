@@ -24,7 +24,7 @@ plantRDD = parts.map(lambda p: (p[0], p[1:]))
 stateRDD = plantRDD.flatMap(lambda x: [('state', s) for s in x[1]])
 global states
 states = stateRDD.distinct().collect()
-dictionaryRDD = plantRDD.flatMap(lambda x: dictionary_build)
+dictionaryRDD = plantRDD.flatMap(dictionary_build)
 
 dictionaryRDD = dictionaryRDD.filter(lambda x: x['name'] != pick_state)
 
