@@ -28,8 +28,6 @@ dictionaryRDD = plantRDD.flatMap(lambda x: dictionary_build)
 
 dictionaryRDD = dictionaryRDD.filter(lambda x: x['name'] != pick_state)
 
-output
-
 for row in dictionaryRDD.collect():
 	if (pick_key in row.keys()):
 		output = row[pick_key]
