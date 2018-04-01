@@ -1,5 +1,5 @@
 import sys
-from pyspark import SparkContext, SparkConf
+from pyspark.sql import SparkSession
 
 def dictionary_build(data):
 	dict_buff = []
