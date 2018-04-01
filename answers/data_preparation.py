@@ -11,7 +11,7 @@ def dictionary_build(data):
 	return dict_buff
 
 file_name = sys.argv[1]
-pick_key = int(sys.argv[2])
+pick_key = sys.argv[2]
 pick_state = sys.argv[3]
 output_file = sys.argv[4]
 
