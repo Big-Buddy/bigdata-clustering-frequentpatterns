@@ -33,4 +33,4 @@ for row in dictionaryRDD.collect():
 		output = row[pick_key]
 
 with open(output_file, 'w') as f:
-	f.write(output)
+	f.write(str(output))
