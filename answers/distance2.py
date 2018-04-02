@@ -5,9 +5,9 @@ def dictionary_build(data):
 	dict_buff = []
 	for s in states:
 		if s[1] in data[1]:
-			dict_buff.append({'name' : s, data[0] : 1})
+			dict_buff.append({'name' : s[1], data[0] : 1})
 		else:
-			dict_buff.append({'name' : s, data[0] : 0})
+			dict_buff.append({'name' : s[1], data[0] : 0})
 	return dict_buff
 
 def dictionary_combine(data):
@@ -35,7 +35,7 @@ global states
 states = stateRDD.distinct().collect()
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
 
-dictionaryRDD = dictionaryRDD.filter(lambda x: (x['name'] != state1) and (x['name'] != state2))
+dictionaryRDD = dictionaryRDD.filter(lambda x: (x['name'] != state1) or (x['name'] != state2))
 distanceRDD = dictionaryRDD.map(dictionary_combine)
 distanceRDD = distanceRDD.reduceByKey(lambda a,b: a+b)
 
