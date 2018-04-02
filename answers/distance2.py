@@ -10,14 +10,16 @@ def dictionary_build(data):
 			dict_buff.append({'name' : s[1], data[0] : 0})
 	return dict_buff
 
-def dictionary_combine(data):
+def distance_combine(data):
 	dict_keys = list(data.keys())
 	if (dict_keys[0] == 'name'):
-		tuple0 = data[dict_keys[0]]
-		tuple1 = data[dict_keys[1]]
+		#tuple0 = data[dict_keys[0]]
+		tuple0 = dict_keys[1]
+		tuple11 = data[dict_keys[1]]
 	else:
-		tuple0 = data[dict_keys[1]]
-		tuple1 = data[dict_keys[0]]
+		#tuple0 = data[dict_keys[1]]
+		tuple0 = dict_keys[0]
+		tuple11 = data[dict_keys[0]]
 	return (tuple0, tuple1)
 
 file_name = sys.argv[1]
@@ -36,8 +38,8 @@ states = stateRDD.distinct().collect()
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
 
 dictionaryRDD = dictionaryRDD.filter(lambda x: (x['name'] == state1 or x['name'] == state2))
-distanceRDD = dictionaryRDD.map(dictionary_combine)
-distanceRDD = distanceRDD.reduceByKey(lambda a,b: a+b)
+distanceRDD = dictionaryRDD.map(distance_combine)
+distanceRDD = distanceRDD.reduceByKey(lambda a,b: (a-b)**2)
 
 print(distanceRDD.collect())
 #state_points = distanceRDD.collect()
