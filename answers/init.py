@@ -13,7 +13,7 @@ all_states = [ "ab", "ak", "ar", "az", "ca", "co", "ct", "de", "dc", "fl",
            "bc", "mb", "nb", "lb", "nf", "nt", "ns", "nu", "on", "qc", "sk",
            "yt", "dengl", "fraspm" ]
 
-init_states = random.sample(all_s, num_states)
+init_states = random.sample(all_states, num_states)
 
 for x in init_states:
 	print(x)
