@@ -41,7 +41,7 @@ dictionaryRDD = dictionaryRDD.filter(lambda x: (x['name'] == state1 or x['name']
 distanceRDD = dictionaryRDD.map(distance_combine)
 distanceRDD = distanceRDD.reduceByKey(lambda a,b: (a-b)**2)
 
-print(distanceRDD.reduce(lambda a,b: a+b))
+print(distanceRDD.reduce(lambda a,b: a[1]+b[1]))
 #state_points = distanceRDD.collect()
 #point_x = state_points[0][1]
 #point_y = state_points[1][1]
