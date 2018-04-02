@@ -5,9 +5,9 @@ def dictionary_build(data):
 	dict_buff = []
 	for s in states:
 		if s[1] in data[1]:
-			dict_buff.append({'name' : s, data[0] : 1})
+			dict_buff.append({'name' : s[1], data[0] : 1})
 		else:
-			dict_buff.append({'name' : s, data[0] : 0})
+			dict_buff.append({'name' : s[1], data[0] : 0})
 	return dict_buff
 
 file_name = sys.argv[1]
