@@ -3,9 +3,8 @@ import sys
 import random
 
 num_states = int(sys.argv[1])
-seed = int(sys.argv[2])
-
-random.seed(seed)
+random_seed = int(sys.argv[2])
+random.seed(random_seed)
 init_states = random.sample(all_s, num_states)
 
 for x in init_states:
