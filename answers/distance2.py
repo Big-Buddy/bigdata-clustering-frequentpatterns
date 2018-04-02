@@ -20,7 +20,7 @@ def distance_combine(data):
 		#tuple0 = data[dict_keys[1]]
 		tuple0 = dict_keys[0]
 		tuple11 = data[dict_keys[0]]
-	return (tuple0, tuple1)
+	return (tuple0, tuple11)
 
 file_name = sys.argv[1]
 state1 = sys.argv[2]
