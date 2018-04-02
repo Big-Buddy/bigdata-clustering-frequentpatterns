@@ -35,7 +35,7 @@ global states
 states = stateRDD.distinct().collect()
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
 
-dictionaryRDD = dictionaryRDD.filter(lambda x: (x['name'] != state1) and (x['name'] != state2))
+dictionaryRDD = dictionaryRDD.filter(lambda x: (x['name'] != state1 or x['name'] != state2))
 distanceRDD = dictionaryRDD.map(dictionary_combine)
 distanceRDD = distanceRDD.reduceByKey(lambda a,b: a+b)
 
