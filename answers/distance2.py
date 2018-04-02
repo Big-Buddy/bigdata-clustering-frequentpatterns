@@ -13,10 +13,10 @@ def dictionary_build(data):
 def dictionary_combine(data):
 	dict_keys = list(data.keys())
 	if (dict_keys[0] == 'name'):
-		tuple0 = dict_keys[0]
+		tuple0 = data[dict_keys[0]]
 		tuple1 = data[dict_keys[1]]
 	else:
-		tuple0 = dict_keys[1]
+		tuple0 = data[dict_keys[1]]
 		tuple1 = data[dict_keys[0]]
 	return (tuple0, tuple1)
 
