@@ -11,7 +11,7 @@ def dictionary_build(data):
 	return dict_buff
 
 def dictionary_combine(data):
-	dict_keys = data.keys()
+	dict_keys = list(data.keys())
 	if (dict_keys[0] == 'name'):
 		tuple0 = dict_keys[0]
 		tuple1 = data[dict_keys[1]]
