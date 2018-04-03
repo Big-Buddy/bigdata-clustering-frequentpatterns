@@ -54,6 +54,7 @@ plantRDD = parts.map(lambda p: (p[0], p[1:]))
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
 distanceRDD = dictionaryRDD.map(distance_combine)
 distanceRDD = distanceRDD.reduceByKey(lambda a,b: a+b)
+distances = distanceRDD.map(lambda x: {x[0] : x[1]}).collect()
 
 classes = []
 
@@ -62,15 +63,10 @@ for i in init_states:
 
 for s in all_states:
 	dist_buffer = []
-	if(s not in init_states):
-		compareRDD = distanceRDD.filter(lambda x: x[0] == s or x[0] in init_states)
-		for i in init_states:
-			compareRDD = compareRDD.filter(lambda x: x[0] == s or x[0] == i)
-			compareRDD = compareRDD.map(lambda x: x[1])
-			dist_to_centroid = compareRDD.reduce(euclid_sqr)
-			dist_buffer.append(dist_to_centroid[1])
-		class_ptr = dist_buffer.index(min(dist_buffer))
-		classes[class_ptr].append(s)
+	for i in init_states:
+		dist_buffer.append(euclid_sqr(s,i))
+	class_ptr = dist_buffer.index(min(dist_buffer))
+	classes[class_ptr].append(s)
 
 counter = 0
 for c in classes:
