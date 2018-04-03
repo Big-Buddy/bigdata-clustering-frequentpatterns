@@ -24,7 +24,7 @@ def distance_combine(data):
 	return (el00, (el01, el1))
 
 def compare_combine(data, cent, rel):
-	if(data[0] == i or data[0] == s):
+	if(data[0] == cent or data[0] == rel):
 		return (data[1][0], data[1][1])
 
 file_name = sys.argv[1]
