@@ -23,10 +23,6 @@ def distance_combine(data):
 		el1 = data[dict_keys[0]]
 	return (el00, (el01, el1))
 
-def compare_combine(data, cent, rel):
-	if(data[0] == cent or data[0] == rel):
-		return (data[1][0], data[1][1])
-
 file_name = sys.argv[1]
 num_states = int(sys.argv[2])
 random_seed = int(sys.argv[3])
@@ -60,9 +56,9 @@ for i in init_states:
 for s in all_states:
 	dist_buffer = []
 	if(s not in init_states):
-		compareRDD = distanceRDD.filter(lambda x: x[0] in init_states or x[0] == s)
 		for i in init_states:
-			compareRDD = compareRDD.map(lambda x: compare_combine(x, i, s))
+			compareRDD = distanceRDD.filter(lambda x: x[0] == i or x[0] == s)
+			compareRDD = compareRDD.map(lambda x: (x[1][0], x[1][1]))
 			compareRDD = compareRDD.reduceByKey(lambda a,b: (a-b)**2)
 			compareRDD = compareRDD.map(lambda x: ('plantDist', x[1]))
 			dist_buffer.append(compareRDD.reduceByKey(lambda a,b: a+b).collect()[0][1])
