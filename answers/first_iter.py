@@ -23,7 +23,7 @@ def distance_combine(data):
 		el1 = data[dict_keys[0]]
 	return (el00, (el01, el1))
 
-def compare_combine(data, cent=i, rel=s):
+def compare_combine(data, cent, rel):
 	if(data[0] == i or data[0] == s):
 		return (data[1][0], data[1][1])
 
