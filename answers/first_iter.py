@@ -61,7 +61,7 @@ distances = distanceRDD.reduceByKey(lambda a,b: a+b).collectAsMap()
 classes = []
 
 for i in init_states:
-	classes.append([[i]])
+	classes.append([i])
 
 for s in all_states:
 	dist_buffer = []
