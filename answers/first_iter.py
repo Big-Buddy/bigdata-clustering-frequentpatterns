@@ -65,6 +65,7 @@ for i in init_states:
 
 for s in all_states:
 	dist_buffer = []
+	if(s not in init_states)
 	for i in init_states:
 		dist_buffer.append(euclid_sqr(distances[s], distances[i]))
 	class_ptr = dist_buffer.index(min(dist_buffer))
@@ -75,7 +76,8 @@ for c in classes:
 	print("* Class " + str(counter))
 	classes[counter].sort()
 	for s in classes[counter]:
-		print(s + ' ')
+		print(s + ' ', end='')
 	counter += 1
+	print()
 
 print(time.time() - start_time)
