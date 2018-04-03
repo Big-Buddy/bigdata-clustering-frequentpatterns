@@ -74,7 +74,7 @@ counter = 0
 for c in classes:
 	print("* Class " + str(counter))
 	for s in classes[counter]:
-		print(s)
+		print(s + ' ')
 	counter += 1
 
 print(time.time() - start_time)
