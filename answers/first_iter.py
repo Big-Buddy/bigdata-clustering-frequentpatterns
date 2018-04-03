@@ -21,7 +21,8 @@ def distance_combine(data):
 		el00 = data[dict_keys[1]]
 		el01 = dict_keys[0]
 		el1 = data[dict_keys[0]]
-	return (el00, (el01, list(el1)))
+	list1 = [el1]
+	return (el00, (el01, list1))
 
 def euclid_sqr(a,b):
 	distance = 0
