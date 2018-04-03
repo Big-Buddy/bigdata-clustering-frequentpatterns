@@ -21,8 +21,7 @@ def distance_combine(data):
 		el00 = data[dict_keys[1]]
 		el01 = dict_keys[0]
 		el1 = data[dict_keys[0]]
-	list1 = [el1]
-	return (el00, (el01, list1))
+	return (el00, [el1])
 
 def euclid_sqr(a,b):
 	distance = 0
@@ -54,7 +53,7 @@ parts = lines.map(lambda row: row.split(","))
 plantRDD = parts.map(lambda p: (p[0], p[1:]))
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
 distanceRDD = dictionaryRDD.map(distance_combine)
-distanceRDD = distanceRDD.reduceByKey(lambda a,b: a[1]+b[1])
+distanceRDD = distanceRDD.reduceByKey(lambda a,b: a+b)
 
 classes = []
 
