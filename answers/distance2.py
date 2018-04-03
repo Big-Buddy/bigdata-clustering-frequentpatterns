@@ -26,7 +26,7 @@ file_name = sys.argv[1]
 state1 = sys.argv[2]
 state2 = sys.argv[3]
 
-conf = SparkConf().setAppName("lab1").setMaster("local")
+conf = SparkConf().setAppName("lab3").setMaster("local")
 sc = SparkContext(conf=conf)
 
 lines = sc.textFile(file_name)
@@ -42,8 +42,3 @@ distanceRDD = dictionaryRDD.map(distance_combine)
 distanceRDD = distanceRDD.reduceByKey(lambda a,b: (a-b)**2)
 distanceRDD = distanceRDD.map(lambda x: ('plantDist', x[1]))
 print(distanceRDD.reduceByKey(lambda a,b: a+b).collect()[0][1])
-#state_points = distanceRDD.collect()
-#point_x = state_points[0][1]
-#point_y = state_points[1][1]
-
-#distance = (point_x-point_y)**2
