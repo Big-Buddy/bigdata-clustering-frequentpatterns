@@ -63,6 +63,10 @@ classes = []
 for i in init_states:
 	classes.append([i])
 
+###swap due to discrepency between init.py 3 123 and centroid positions in first_iter.txt
+
+init_states[0], init_states[1]=init_states[1], init_states[0]
+
 for s in all_states:
 	dist_buffer = []
 	if(s not in init_states):
@@ -79,5 +83,3 @@ for c in classes:
 		print(s + ' ', end='')
 	counter += 1
 	print()
-
-print(time.time() - start_time)
