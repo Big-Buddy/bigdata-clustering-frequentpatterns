@@ -62,7 +62,7 @@ for s in all_states:
 	if(s not in init_states):
 		compareRDD = distanceRDD.filter(lambda x: x[0] in init_states or x[0] == s)
 		for i in init_states:
-			compareRDD = compareRDD.map(compare_combine(cent=i, rel=s))
+			compareRDD = compareRDD.map(lambda x: compare_combine(x, i, s))
 			compareRDD = compareRDD.reduceByKey(lambda a,b: (a-b)**2)
 			compareRDD = compareRDD.map(lambda x: ('plantDist', x[1]))
 			dist_buffer.append(compareRDD.reduceByKey(lambda a,b: a+b).collect()[0][1])
