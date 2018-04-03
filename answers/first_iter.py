@@ -21,7 +21,13 @@ def distance_combine(data):
 		el00 = data[dict_keys[1]]
 		el01 = dict_keys[0]
 		el1 = data[dict_keys[0]]
-	return (el00, (el01, el1))
+	return (el00, (el01, [el1]))
+
+def euclid_sqr(a,b):
+	distance = 0
+	for p in range(len(a)):
+		distance += (a[p]-b[p])**2
+	return distance
 
 file_name = sys.argv[1]
 num_states = int(sys.argv[2])
@@ -47,6 +53,7 @@ parts = lines.map(lambda row: row.split(","))
 plantRDD = parts.map(lambda p: (p[0], p[1:]))
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
 distanceRDD = dictionaryRDD.map(distance_combine)
+distanceRDD = distanceRDD.reduceByKey(lambda a,b: a[1]+b[1])
 
 classes = []
 
@@ -56,12 +63,12 @@ for i in init_states:
 for s in all_states:
 	dist_buffer = []
 	if(s not in init_states):
+		compareRDD = distanceRDD.filter(lambda x: x[0] == s or x[0] in init_states)
 		for i in init_states:
-			compareRDD = distanceRDD.filter(lambda x: x[0] == i or x[0] == s)
-			compareRDD = compareRDD.map(lambda x: (x[1][0], x[1][1]))
-			compareRDD = compareRDD.reduceByKey(lambda a,b: (a-b)**2)
-			compareRDD = compareRDD.map(lambda x: ('plantDist', x[1]))
-			dist_buffer.append(compareRDD.reduceByKey(lambda a,b: a+b).collect()[0][1])
+			compareRDD = compareRDD.filter(lambda x: x[0] == s or x[0] == i)
+			compareRDD = compareRDD.map(lambda x: x[1])
+			dist_to_centroid = compareRDD.reduce(euclid_sqr)
+			dist_buffer.append(dist_to_centroid[1])
 		class_ptr = dist_buffer.index(min(dist_buffer))
 		classes[class_ptr].append(s)
 
