@@ -1,6 +1,7 @@
 import sys
 import random
 from pyspark import SparkContext, SparkConf
+import time
 
 def dictionary_build(data):
 	dict_buff = []
@@ -48,13 +49,14 @@ init_states = random.sample(all_states, num_states)
 conf = SparkConf().setAppName("lab3").setMaster("local")
 sc = SparkContext(conf=conf)
 
+start_time= time.time()
+
 lines = sc.textFile(file_name)
 parts = lines.map(lambda row: row.split(","))
 plantRDD = parts.map(lambda p: (p[0], p[1:]))
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
 distanceRDD = dictionaryRDD.map(distance_combine)
-distanceRDD = distanceRDD.reduceByKey(lambda a,b: a+b)
-distances = distanceRDD.map(lambda x: {x[0] : x[1]}).collect()
+distances = distanceRDD.reduceByKey(lambda a,b: a+b).collectAsMap()
 
 classes = []
 
@@ -74,3 +76,5 @@ for c in classes:
 	for s in classes[counter]:
 		print(s + " ")
 	counter += 1
+
+print(time.time() - start_time)
