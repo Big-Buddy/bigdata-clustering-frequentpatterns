@@ -117,11 +117,13 @@ while(not compare_centroids(old_centroids, new_centroids)):
 		c = []
 
 ###WRITE CLASSES TO FILE
+for c in classes:
+	c.sort()
 classes.sort()
+
 with open(output_file, 'w') as f:
 	counter = 0
 	for c in classes:
-		c.sort()
 		f.write("* Class " + str(counter) + "\n")
 		for s in c:
 			f.write(s + " ")
