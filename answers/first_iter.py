@@ -73,11 +73,12 @@ for s in all_states:
 
 counter = 0
 
-
+for c in classes:
+	c.sort()
 classes.sort()
+
 for c in classes:
 	print("* Class " + str(counter))
-	classes[counter].sort()
 	for s in classes[counter]:
 		print(s + ' ', end='')
 	counter += 1
