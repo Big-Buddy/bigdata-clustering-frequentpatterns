@@ -30,6 +30,33 @@ def euclid_sqr(a,b):
 		distance += (a[p]-b[p])**2
 	return distance
 
+def update_centroids(classes, distances):
+	mean_buffer = []
+	###LOOP OVER k CLASSES
+	for c in classes:
+		class_size = len(c)
+		class_buffer = []
+		###LOOP OVER EVERY STATE IN THE CLASS
+		for x in c:
+			###LOOP OVER ALL THE POINTS IN THAT STATE AND ADD TO THE BUFFER
+			for y in distances[x]:
+				if (len(class_buffer) == len(distances[x])):
+					class_buffer[distances[x].index(y)] += y
+				else:
+					class_buffer.append(y)
+		###GET AVERAGE OF EACH POINT
+		for a in class_buffer:
+			a /= class_size
+		mean_buffer.append(class_buffer)
+	return mean_buffer
+
+def compare_centroids(old, new):
+	flag = True
+	for x in old:
+		if(x != new[old.index(x)]):
+			flag = False
+	return flag
+
 file_name = sys.argv[1]
 num_clusters = int(sys.argv[2])
 random_seed = int(sys.argv[3])
@@ -64,12 +91,7 @@ classes = []
 for i in init_states:
 	classes.append([i])
 
-###swap due to discrepency between init.py 3 123 and centroid positions in first_iter.txt
-
-init_states[0], init_states[1]=init_states[1], init_states[0]
-
-old_centroids = []
-
+###FIRST ITER ACCORDING TO RANDOMLY CHOSEN CENTROIDS
 for s in all_states:
 	dist_buffer = []
 	if(s not in init_states):
@@ -77,5 +99,32 @@ for s in all_states:
 			dist_buffer.append(euclid_sqr(distances[s], distances[i]))
 		class_ptr = dist_buffer.index(min(dist_buffer))
 		classes[class_ptr].append(s)
+old_centroids = []
+new_centroids = update_centroids(classes, distances)
+for c in classes:
+	c = []
+###ITER UNTIL CONVERGENCE
+while(not compare_centroids(old_centroids, new_centroids)):
+	for s in all_states:
+		dist_buffer = []
+		for i in new_centroids:
+			dist_buffer.append(euclid_sqr(distances[s], i))
+		class_ptr = dist_buffer.index(min(dist_buffer))
+		classes[class_ptr].append(s)
+	old_centroids = new_centroids
+	new_centroids = update_centroids(classes, distances)
+	for c in classes:
+		c = []
 
-new_centroids = mean(classes)
+###WRITE CLASSES TO FILE
+classes.sort()
+with open(output_file, 'w') as f:
+	counter = 0
+	for c in classes:
+		c.sort()
+		f.write("* Class " + str(counter) + "\n")
+		for s in c:
+			f.write(s + " ")
+		f.write("\n")
+		counter += 1
+
