@@ -24,38 +24,32 @@ def distance_combine(data):
 		el1 = data[dict_keys[0]]
 	return (el00, [el1])
 
+def closest_centroid(data, centroids):
+	distance_buffer = []
+	for x in centroids:
+		distance_buffer.append((x, euclid_sqr(x, data[1])))
+	closest = min(distance_buffer, key = lambda x: x[1])
+	return closest[0]
+
 def euclid_sqr(a,b):
 	distance = 0
 	for p in range(len(a)):
 		distance += (a[p]-b[p])**2
 	return distance
 
-def update_centroids(classes, distances):
-	mean_buffer = []
-	###LOOP OVER k CLASSES
-	for c in classes:
-		class_size = len(c)
-		class_buffer = []
-		###LOOP OVER EVERY STATE IN THE CLASS
-		for x in c:
-			###LOOP OVER ALL THE POINTS IN THAT STATE AND ADD TO THE BUFFER
-			for y in distances[x]:
-				if (len(class_buffer) == len(distances[x])):
-					class_buffer[distances[x].index(y)] += y
-				else:
-					class_buffer.append(y)
-		###GET AVERAGE OF EACH POINT
-		for a in class_buffer:
-			a /= class_size
-		mean_buffer.append(class_buffer)
-	return mean_buffer
+def add_pairs(a,b):
+	point_buffer = []
+	for x in range(0,len(a)):
+		point_buffer.append(a[x]+b[x])
+	return point_buffer
 
-def compare_centroids(old, new):
-	flag = True
-	for x in old:
-		if(x != new[old.index(x)]):
-			flag = False
-	return flag
+def update_centroids(classRDD, counts):
+	classes = classRDD.collect()
+	
+
+###SETUP
+
+START_TIME=time.time()
 
 file_name = sys.argv[1]
 num_clusters = int(sys.argv[2])
@@ -74,59 +68,51 @@ all_states = ["ab", "ak", "ar", "az", "ca", "co", "ct", "de", "dc", "fl",
 
 init_states = random.sample(all_states, num_clusters)
 
+###PREPPING DATA
+
 conf = SparkConf().setAppName("lab3").setMaster("local")
 sc = SparkContext(conf=conf)
-
-start_time= time.time()
 
 lines = sc.textFile(file_name)
 parts = lines.map(lambda row: row.split(","))
 plantRDD = parts.map(lambda p: (p[0], p[1:]))
 dictionaryRDD = plantRDD.flatMap(dictionary_build)
-distanceRDD = dictionaryRDD.map(distance_combine)
-distances = distanceRDD.reduceByKey(lambda a,b: a+b).collectAsMap()
+distanceRDD = dictionaryRDD.map(distance_combine).reduceByKey(lambda a,b: a+b)
 
-classes = []
+centroids = distanceRDD.filter(lambda x: x[0] not in init_states).map(lambda x: x[1]).collect()
 
-for i in init_states:
-	classes.append([i])
-
-###FIRST ITER ACCORDING TO RANDOMLY CHOSEN CENTROIDS
-for s in all_states:
-	dist_buffer = []
-	if(s not in init_states):
-		for i in init_states:
-			dist_buffer.append(euclid_sqr(distances[s], distances[i]))
-		class_ptr = dist_buffer.index(min(dist_buffer))
-		classes[class_ptr].append(s)
 old_centroids = []
-new_centroids = update_centroids(classes, distances)
-for c in classes:
-	c = []
-###ITER UNTIL CONVERGENCE
-while(not compare_centroids(old_centroids, new_centroids)):
-	for s in all_states:
-		dist_buffer = []
-		for i in new_centroids:
-			dist_buffer.append(euclid_sqr(distances[s], i))
-		class_ptr = dist_buffer.index(min(dist_buffer))
-		classes[class_ptr].append(s)
-	old_centroids = new_centroids
-	new_centroids = update_centroids(classes, distances)
-	for c in classes:
-		c = []
+classes = []
+max_it = 100
+
+###KMEANS ITERATIONS BEGIN HERE
+for i in range(0, max_it):
+	#find closest centroid to each point
+	classRDD = distanceRDD.map(lambda x: (closest_centroid(x, centroids), x))
+	#update centroids
+	old_centroids = centroids
+	class_sumRDD = classRDD.reduceByKey(lambda a,b: addpairs(a,b)).map(lambda x: x[1])
+	centroids = []
+	for points in class_sumRDD.collect():
+		count = len(points)
+		mean_buffer = []
+		for x in points:
+			mean_buffer.append(x/count)
+		centroids.append(mean_buffer)
+	#check for convergence, if convergence, reduce each class to its states and break
+	if (sorted(old_centroids) == sorted(centroids)):
+		classes = classRDD.reduceByKey(lambda a,b: str(a[1][0]) + ' ' + b[1][0])
+		break
 
 ###WRITE CLASSES TO FILE
-for c in classes:
-	c.sort()
-classes.sort()
+#with open(output_file, 'w') as f:
+#	counter = 0
+#	for c in classes:
+#		f.write("* Class " + str(counter) + "\n")
+#		for s in c:
+#			f.write(s + " ")
+#		f.write("\n")
+#		counter += 1
 
-with open(output_file, 'w') as f:
-	counter = 0
-	for c in classes:
-		f.write("* Class " + str(counter) + "\n")
-		for s in c:
-			f.write(s + " ")
-		f.write("\n")
-		counter += 1
+print(time.time() - START_TIME)
 
